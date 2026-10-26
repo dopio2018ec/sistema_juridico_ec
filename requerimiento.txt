@@ -1,0 +1,682 @@
+
+# PROMPT MAESTRO PARA CLAUDE CODE
+## Desarrollo de un sistema de gestión jurídica del Ecuador
+
+Actúa como un **arquitecto de software senior, analista de sistemas y especialista en seguridad de aplicaciones web PHP**. Debes diseñar e implementar una aplicación web profesional para administrar legislación ecuatoriana, utilizando PHP y MariaDB.
+
+No te limites a generar ejemplos o fragmentos de código. Trabaja sobre el proyecto, crea los archivos necesarios, implementa las funcionalidades, ejecuta las pruebas disponibles y documenta cómo instalar y mantener la aplicación.
+
+## 1. Objetivo del proyecto
+
+Construir un sistema web denominado **Sistema Jurídico Ecuador**, que permita registrar, organizar, consultar, buscar y actualizar normas jurídicas y sus artículos, conservando únicamente el texto vigente de cada artículo.
+
+El sistema debe permitir gestionar:
+
+- Constitución de la República del Ecuador.
+- Códigos.
+- Leyes orgánicas.
+- Leyes ordinarias.
+- Acuerdos ministeriales.
+- Resoluciones.
+- Otros tipos de normas configurables.
+
+El sistema debe estar preparado para ampliarse posteriormente con nuevas categorías, funcionalidades y módulos.
+
+## 2. Tecnologías obligatorias
+
+Utiliza las siguientes tecnologías:
+
+- **Backend:** PHP 8.3 o superior, compatible con una versión estable soportada.
+- **Base de datos:** MariaDB 10.11 o superior, o una versión estable compatible.
+- **Acceso a datos:** PDO con consultas preparadas.
+- **Frontend:** HTML5, CSS3, JavaScript y Bootstrap 5.
+- **Iconografía:** Bootstrap Icons.
+- **Arquitectura:** MVC o una estructura por capas claramente separadas.
+- **Control de versiones:** Git.
+- **Pruebas:** PHPUnit para pruebas unitarias y de integración cuando corresponda.
+
+Evita dependencias innecesarias. Si propones Composer, utiliza paquetes conocidos, mantenidos y compatibles con las versiones seleccionadas.
+
+No mezcles consultas SQL, lógica de negocio y presentación en un único archivo PHP.
+
+## 3. Base de datos
+
+Utiliza como referencia la base de datos previamente definida, denominada `sistema_juridico_ec`.
+
+Las tablas principales son:
+
+- `usuarios`
+- `roles`
+- `usuarios_roles`
+- `tipos_norma`
+- `normas`
+- `publicaciones_oficiales`
+- `articulos`
+- `relaciones_normativas`
+- `auditoria`
+
+Antes de implementar el código, inspecciona el esquema SQL existente si está disponible en el proyecto. Respeta sus nombres, tipos de datos, claves foráneas e índices.
+
+No elimines ni renombres columnas existentes sin justificar el cambio y proporcionar una migración compatible.
+
+### Reglas del modelo jurídico
+
+1. Cada norma pertenece a un tipo de norma.
+2. Una norma puede contener múltiples artículos y disposiciones.
+3. Cada artículo debe almacenar directamente su contenido vigente.
+4. No implementar tablas de versiones históricas de artículos ni reconstrucción de textos anteriores.
+5. Una norma puede tener múltiples publicaciones oficiales.
+6. Una norma puede reformar o derogar otra norma, total o parcialmente.
+7. Los artículos pueden representar considerandos, artículos numerados y disposiciones generales, transitorias, reformatorias, derogatorias y finales.
+8. Cada artículo debe tener un número o identificador, título opcional, contenido, orden y fechas de creación y actualización.
+9. Las modificaciones deben registrar el usuario responsable.
+10. No eliminar físicamente registros jurídicos de manera rutinaria; utilizar estados y restricciones de integridad.
+
+Los cambios al texto vigente deben efectuarse mediante transacciones cuando involucren varias operaciones relacionadas.
+
+La aplicación no debe afirmar que una norma está vigente únicamente porque su estado sea `VIGENTE`. Debe considerar las fechas, las relaciones normativas y la información de las fuentes oficiales. Cuando no exista información suficiente, debe indicar que la vigencia está pendiente de verificación.
+
+## 4. Arquitectura del proyecto
+
+Organiza el proyecto de manera clara, mantenible y segura. Puedes utilizar esta estructura como punto de partida:
+
+```text
+sistema-juridico/
+├── app/
+│   ├── Controllers/
+│   ├── Models/
+│   ├── Services/
+│   ├── Repositories/
+│   ├── Middleware/
+│   ├── Validators/
+│   ├── Policies/
+│   └── Views/
+│       ├── layouts/
+│       ├── auth/
+│       ├── usuarios/
+│       ├── tipos_norma/
+│       ├── normas/
+│       ├── articulos/
+│       ├── publicaciones/
+│       └── errores/
+├── config/
+│   ├── app.php
+│   └── database.php
+├── database/
+│   ├── migrations/
+│   ├── seeds/
+│   └── sistema_juridico_ec.sql
+├── public/
+│   ├── index.php
+│   ├── assets/
+│   │   ├── css/
+│   │   ├── js/
+│   │   └── images/
+│   └── .htaccess
+├── routes/
+│   └── web.php
+├── storage/
+│   ├── logs/
+│   └── cache/
+├── tests/
+│   ├── Unit/
+│   └── Integration/
+├── .env.example
+├── .gitignore
+├── composer.json
+├── README.md
+└── SECURITY.md
+```
+
+Esta estructura es orientativa. Ajusta los directorios según la arquitectura elegida, manteniendo responsabilidades separadas.
+
+El directorio `public/` debe ser el único directorio expuesto directamente por el servidor web. Los archivos de configuración, logs, copias de seguridad y credenciales deben permanecer fuera del directorio público.
+
+## 5. Autenticación y gestión de usuarios
+
+Implementa un módulo completo de usuarios.
+
+### Funcionalidades
+
+- Inicio y cierre de sesión.
+- Creación de usuarios por un administrador.
+- Edición de datos personales.
+- Activación y desactivación de cuentas.
+- Asignación de uno o varios roles.
+- Cambio y restablecimiento seguro de contraseña.
+- Consulta de usuarios con paginación.
+- Búsqueda por nombre, correo y estado.
+- Registro de último acceso, si se incorpora el campo correspondiente.
+- Bloqueo temporal ante múltiples intentos fallidos.
+- Revocación de sesiones activas cuando sea necesario.
+
+### Seguridad de contraseñas
+
+Utiliza `password_hash()` con Argon2id cuando esté disponible y correctamente configurado, o `PASSWORD_DEFAULT` como alternativa.
+
+Verifica las contraseñas con `password_verify()` y permite actualizarlas mediante `password_needs_rehash()`.
+
+Nunca almacenes contraseñas en texto plano ni utilices cifrado reversible para ellas.
+
+### Roles y permisos
+
+Implementa como mínimo estos roles:
+
+- `ADMINISTRADOR`: administra usuarios, roles, catálogos y configuración.
+- `EDITOR_JURIDICO`: registra y actualiza normas, publicaciones y artículos.
+- `REVISOR`: revisa y valida información jurídica.
+- `CONSULTA`: accede únicamente a las funcionalidades de lectura permitidas.
+
+Los permisos deben verificarse en el backend mediante middleware o políticas de autorización. Ocultar botones en la interfaz no constituye un control de acceso.
+
+Aplica el principio de mínimo privilegio.
+
+## 6. Sesiones, tokens de acceso y CSRF
+
+Distingue correctamente los mecanismos de seguridad:
+
+### Para la aplicación web
+
+- Utiliza sesiones PHP seguras.
+- Activa `session.use_strict_mode`.
+- Configura cookies `HttpOnly`, `Secure` bajo HTTPS y `SameSite=Lax` o una política más estricta compatible con la aplicación.
+- Regenera el identificador de sesión después del inicio de sesión y los cambios de privilegios.
+- Establece tiempos de expiración por inactividad y duración máxima de sesión.
+- Invalida correctamente la sesión en el cierre de sesión.
+- Protege formularios y solicitudes que modifican datos mediante tokens CSRF generados criptográficamente.
+- Verifica los tokens CSRF en el servidor mediante comparación segura.
+- No utilices tokens CSRF como sustituto de la autenticación o autorización.
+
+### Si se implementa una API
+
+Crea un módulo independiente de autenticación para API, con:
+
+- Tokens de acceso aleatorios y criptográficamente seguros.
+- Expiración configurable y duración limitada.
+- Revocación de tokens.
+- Alcances o permisos asociados a cada token.
+- Almacenamiento de hashes de tokens, cuando el diseño lo permita.
+- Validación del token en cada solicitud protegida.
+- Transporte exclusivo mediante HTTPS.
+- Prohibición de incluir tokens en URLs, logs o mensajes de error.
+
+No inventes un sistema criptográfico propio ni implementes JWT si no existe una necesidad concreta. Si se elige JWT, valida estrictamente el algoritmo, emisor, audiencia, expiración y demás claims requeridos.
+
+La API debe estar deshabilitada si no forma parte de la primera versión funcional.
+
+## 7. Seguridad de consultas y validación de datos
+
+### Consultas preparadas
+
+Utiliza PDO y consultas preparadas para todas las operaciones SQL que incluyan datos variables.
+
+Ejemplo de referencia:
+
+```php
+$stmt = $pdo->prepare(
+    'SELECT id, nombre, correo
+     FROM usuarios
+     WHERE correo = :correo
+       AND estado = 1'
+);
+
+$stmt->execute([
+    'correo' => $correo
+]);
+
+$usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+```
+
+Configura PDO para lanzar excepciones ante errores y utiliza el modo de emulación de consultas preparadas desactivado cuando sea compatible.
+
+No concatenes valores proporcionados por usuarios en sentencias SQL.
+
+Para ordenamientos y nombres de columnas dinámicos, utiliza listas permitidas explícitas, porque los identificadores SQL no se protegen igual que los valores parametrizados.
+
+### Validación de entradas
+
+Implementa validaciones del lado del servidor para todos los formularios y solicitudes.
+
+Valida, según corresponda:
+
+- Campos obligatorios.
+- Longitudes máximas y mínimas.
+- Formato del correo electrónico.
+- Unicidad del correo.
+- Fechas válidas y coherentes.
+- Identificadores numéricos positivos.
+- Existencia de las claves foráneas.
+- Valores permitidos para estados, roles y tipos de norma.
+- Longitud de títulos, números de norma y nombres de instituciones.
+- Formato y protocolo de las URL de fuentes oficiales.
+- Tipos y tamaños de archivos si se habilitan adjuntos.
+- Permisos del usuario sobre el recurso solicitado.
+
+No confíes en validaciones JavaScript como única protección.
+
+### Protección adicional
+
+Implementa:
+
+- Prevención de inyección SQL.
+- Prevención de XSS mediante escape contextual de salida.
+- Protección CSRF.
+- Prevención de IDOR mediante autorización sobre cada recurso.
+- Limitación de intentos de autenticación.
+- Control de errores sin revelar consultas, rutas ni credenciales.
+- Encabezados de seguridad HTTP.
+- Política de seguridad de contenido (CSP), ajustada a las dependencias utilizadas.
+- Restricciones de carga de archivos, si existe esa funcionalidad.
+- Protección contra asignación masiva de campos.
+- Logs de seguridad sin contraseñas, tokens ni datos sensibles.
+- HTTPS obligatorio en producción.
+
+No deshabilites globalmente errores para ocultar problemas durante el desarrollo. Configura la visualización de errores por entorno y registra los detalles técnicos en logs protegidos.
+
+## 8. Módulos funcionales
+
+### Módulo A. Panel principal
+
+Crea un dashboard con indicadores como:
+
+- Total de normas registradas.
+- Normas agrupadas por tipo.
+- Normas clasificadas por estado.
+- Total de artículos.
+- Últimas normas registradas.
+- Últimos artículos actualizados.
+- Actividad reciente del usuario autenticado.
+
+Los indicadores deben calcularse a partir de la base de datos y respetar los permisos de cada rol.
+
+### Módulo B. Tipos de norma
+
+Permite:
+
+- Listar tipos de norma.
+- Crear nuevos tipos.
+- Editar descripción y estado.
+- Activar y desactivar tipos.
+- Evitar códigos duplicados.
+- Impedir la eliminación de tipos que tengan normas asociadas.
+
+### Módulo C. Registro y administración de normas
+
+Implementa formularios para:
+
+- Tipo de norma.
+- Título completo.
+- Número o código de la norma.
+- Siglas.
+- Entidad emisora.
+- Fecha de emisión.
+- Fecha de publicación.
+- Fecha de entrada en vigencia.
+- Fecha de derogación total, cuando corresponda.
+- Estado administrativo.
+- Observaciones.
+- Referencias oficiales.
+
+Incluye validación de datos, mensajes claros, confirmaciones antes de operaciones relevantes y control de duplicados.
+
+Permite buscar, filtrar, consultar, editar y desactivar registros según los permisos del usuario.
+
+### Módulo D. Publicaciones oficiales
+
+Permite asociar a cada norma una o varias publicaciones, incluyendo:
+
+- Nombre de la publicación.
+- Número del Registro Oficial.
+- Suplemento.
+- Fecha de publicación.
+- Página inicial y final.
+- URL de la fuente.
+- Observaciones.
+
+Valida las URL y presenta enlaces de acceso a las fuentes documentales.
+
+No inventes referencias oficiales ni afirmes que una URL corresponde a una fuente auténtica sin haberla verificado.
+
+### Módulo E. Artículos y disposiciones
+
+Permite:
+
+- Crear artículos asociados a una norma.
+- Registrar su número o identificador.
+- Registrar un título opcional.
+- Ingresar el contenido vigente.
+- Ordenar artículos y disposiciones.
+- Registrar considerandos y disposiciones transitorias, generales, reformatorias, derogatorias y finales.
+- Representar numerales y subapartados cuando corresponda.
+- Editar el contenido vigente.
+- Desactivar artículos sin eliminarlos físicamente.
+- Registrar quién creó o modificó cada artículo.
+- Buscar por número de artículo y contenido.
+
+Utiliza un editor de texto adecuado para contenido jurídico. Si habilitas un editor HTML enriquecido, sanitiza el contenido en el servidor con una biblioteca mantenida y una lista permitida de etiquetas y atributos.
+
+Evita que el contenido jurídico introducido por los usuarios pueda ejecutar JavaScript.
+
+Al actualizar un artículo, muestra una confirmación que indique que el texto anterior será sustituido y no estará disponible en el sistema.
+
+### Módulo F. Relaciones normativas
+
+Permite relacionar dos normas mediante categorías como:
+
+- Reforma.
+- Derogación total.
+- Derogación parcial.
+- Sustitución.
+- Aclaración.
+- Otra relación.
+
+Registra la norma de origen, la norma afectada, los artículos relacionados cuando corresponda, la fecha de efecto y una descripción.
+
+No declares automáticamente una norma como derogada por la existencia de una relación: debe verificarse el alcance y la fecha de efecto.
+
+### Módulo G. Búsqueda jurídica
+
+Implementa una interfaz de búsqueda que permita consultar por:
+
+- Texto o palabras clave.
+- Título de la norma.
+- Tipo de norma.
+- Número de norma.
+- Número de artículo.
+- Entidad emisora.
+- Fecha de publicación.
+- Estado registrado.
+- Fuente oficial.
+
+Incluye paginación, filtros combinables y ordenamiento seguro.
+
+Utiliza índices de MariaDB y búsqueda `FULLTEXT` donde sea apropiado. Evalúa las limitaciones de indexación, términos cortos y acentos.
+
+Muestra resultados con el título de la norma, número de artículo, fragmento relevante y enlace al detalle completo.
+
+No expongas normas o registros restringidos a usuarios que no tengan autorización.
+
+### Módulo H. Auditoría
+
+Registra operaciones importantes, incluyendo:
+
+- Inicio y cierre de sesión.
+- Creación y desactivación de usuarios.
+- Asignación y modificación de roles.
+- Creación y actualización de normas.
+- Modificación de artículos.
+- Cambios en publicaciones y relaciones normativas.
+- Operaciones administrativas sensibles.
+
+Cada evento debe incluir, cuando corresponda:
+
+- Usuario responsable.
+- Fecha y hora.
+- Tipo de operación.
+- Tabla afectada.
+- Identificador del registro.
+- Detalle de los cambios relevantes.
+
+No almacenes contraseñas, cookies de sesión, tokens de acceso ni secretos en la auditoría.
+
+La aplicación debe insertar los registros de auditoría explícitamente o mediante un mecanismo documentado. No asumas que la existencia de la tabla activa la auditoría.
+
+Restringe la modificación y eliminación de estos registros a personal autorizado y protege los logs frente a accesos no permitidos.
+
+## 9. Interfaz con Bootstrap
+
+Diseña una interfaz profesional, moderna, clara y responsive.
+
+Utiliza Bootstrap 5 con:
+
+- Barra lateral de navegación.
+- Barra superior con el usuario autenticado.
+- Dashboard con tarjetas informativas.
+- Formularios accesibles.
+- Tablas adaptables a dispositivos móviles.
+- Modales de confirmación.
+- Alertas de éxito y error.
+- Indicadores de carga.
+- Paginación.
+- Migas de pan.
+- Etiquetas visuales para estados.
+- Navegación mediante teclado.
+- Etiquetas y mensajes de validación accesibles.
+
+La interfaz debe ser apropiada para abogados, asistentes jurídicos, revisores y administradores.
+
+Mantén consistencia en colores, tipografía, espaciado, botones y mensajes.
+
+No utilices alertas JavaScript nativas como mecanismo principal de presentación. Emplea componentes de Bootstrap y mensajes accesibles.
+
+La interfaz debe distinguir claramente entre:
+
+- Datos pendientes de verificación.
+- Información validada.
+- Normas registradas como derogadas.
+- Artículos desactivados.
+- Errores de validación.
+- Operaciones completadas.
+
+## 10. Transacciones e integridad
+
+Implementa transacciones para operaciones que involucren varias tablas.
+
+Ejemplo: el registro de una norma con su publicación y sus artículos debe completarse íntegramente o revertirse si falla una parte esencial del proceso.
+
+Valida las claves foráneas antes de guardar y gestiona los errores de restricciones de base de datos de forma controlada.
+
+Evita duplicados mediante índices únicos cuando exista una regla de unicidad claramente definida.
+
+No establezcas que el título por sí solo identifica de forma única una norma: puede haber normas con títulos similares o instrumentos distintos con nombres coincidentes.
+
+## 11. Requisitos de despliegue y configuración
+
+Implementa configuración mediante variables de entorno.
+
+Incluye un archivo `.env.example` con valores ficticios y no sensibles para:
+
+- Entorno de ejecución.
+- URL base.
+- Host y puerto de MariaDB.
+- Nombre de base de datos.
+- Usuario de base de datos.
+- Contraseña de base de datos.
+- Zona horaria.
+- Parámetros de sesión.
+- Nivel de logging.
+
+No incluyas credenciales reales en el repositorio.
+
+Crea instrucciones para:
+
+1. Instalar dependencias.
+2. Configurar el archivo de entorno.
+3. Crear o importar la base de datos.
+4. Configurar el servidor web.
+5. Crear el primer administrador de forma segura.
+6. Ejecutar pruebas.
+7. Habilitar HTTPS.
+8. Configurar permisos de archivos.
+9. Programar copias de seguridad.
+10. Actualizar la aplicación de forma segura.
+
+Proporciona instrucciones compatibles con Apache y una guía de configuración para Nginx si es viable.
+
+No permitas que un instalador web público cree un administrador sin controles adicionales.
+
+## 12. Pruebas obligatorias
+
+Implementa y ejecuta pruebas para los flujos principales.
+
+### Autenticación y autorización
+
+- Inicio de sesión correcto e incorrecto.
+- Contraseñas almacenadas como hashes.
+- Regeneración de sesión.
+- Cierre de sesión.
+- Bloqueo temporal por intentos fallidos.
+- Acceso denegado a módulos según rol.
+- Rechazo de solicitudes sin token CSRF válido.
+
+### Usuarios
+
+- Registro de usuario.
+- Correo duplicado.
+- Datos inválidos.
+- Asignación de roles.
+- Desactivación de usuario.
+- Intentos de elevar privilegios manipulando solicitudes.
+
+### Normas y artículos
+
+- Crear una norma.
+- Registrar una publicación oficial.
+- Añadir varios artículos.
+- Editar el texto vigente.
+- Buscar normas y artículos.
+- Validar fechas.
+- Prevenir duplicados.
+- Rechazar referencias a registros inexistentes.
+- Verificar que un fallo durante una operación transaccional no deje datos incompletos.
+- Verificar que un usuario sin permisos no pueda modificar artículos mediante solicitudes directas.
+
+### Seguridad general
+
+- Intentos de inyección SQL.
+- Entradas XSS.
+- Manipulación de identificadores.
+- Acceso directo a archivos privados.
+- Exposición de errores y secretos.
+- Validación de archivos, si se permiten cargas.
+
+No afirmes que las pruebas pasaron si no las ejecutaste. Documenta cualquier limitación del entorno.
+
+## 13. Recomendaciones adicionales
+
+Evalúa e implementa cuando sea pertinente:
+
+1. **Copias de seguridad automáticas:** respaldo de MariaDB, retención definida y pruebas periódicas de restauración.
+2. **Confirmación de cambios jurídicos:** solicitar una segunda revisión antes de publicar contenido modificado, con una marca de validación y el usuario revisor.
+3. **Verificación de fuentes:** registrar referencias documentales y permitir señalar si una fuente está pendiente de comprobar.
+4. **Importación de documentos:** permitir cargar archivos PDF como documentos de referencia, con límites de tamaño, validación MIME y almacenamiento fuera del directorio público.
+5. **Exportación:** generar reportes PDF o Excel con información autorizada y referencias a las fuentes.
+6. **Control de concurrencia:** evitar que dos editores sobrescriban accidentalmente los cambios recientes de otro usuario.
+7. **Accesibilidad:** cumplir buenas prácticas WCAG y permitir navegación con teclado.
+8. **Observabilidad:** logs estructurados, seguimiento de errores y alertas para fallos críticos.
+9. **Privacidad:** recolectar únicamente los datos personales necesarios y definir una política de retención.
+10. **Preparación para crecimiento:** diseñar servicios y repositorios reutilizables, índices adecuados y paginación eficiente.
+
+Las funcionalidades adicionales deben priorizarse por etapas, sin comprometer la seguridad ni la calidad del núcleo de la aplicación.
+
+## 14. Forma de trabajo solicitada
+
+Trabaja por etapas y verifica cada una antes de continuar.
+
+### Etapa 1. Inspección y planificación
+
+- Inspecciona los archivos existentes.
+- Identifica el esquema SQL disponible.
+- Define arquitectura, rutas, entidades, permisos y servicios.
+- Detecta incompatibilidades con el modelo de datos.
+- Presenta un plan breve de implementación.
+
+### Etapa 2. Infraestructura
+
+- Configuración de entorno.
+- Conexión PDO.
+- Enrutamiento.
+- Controladores base.
+- Manejo de errores.
+- Middleware de autenticación y autorización.
+- Plantillas Bootstrap.
+
+### Etapa 3. Seguridad y usuarios
+
+- Login y logout.
+- Gestión de sesiones.
+- CSRF.
+- Roles y permisos.
+- CRUD de usuarios.
+- Auditoría inicial.
+
+### Etapa 4. Gestión jurídica
+
+- Tipos de norma.
+- Normas.
+- Publicaciones oficiales.
+- Artículos y disposiciones.
+- Relaciones normativas.
+- Búsqueda jurídica.
+
+### Etapa 5. Calidad y documentación
+
+- Pruebas.
+- Revisión de seguridad.
+- Corrección de errores.
+- Documentación de instalación.
+- Guía de usuario.
+- Lista de pendientes y riesgos conocidos.
+
+No te detengas después de producir un plan si tienes acceso al entorno y puedes implementar el proyecto. Continúa con la implementación por módulos, informando qué archivos creaste y qué pruebas ejecutaste.
+
+Si falta una decisión no esencial, adopta una opción segura y documenta el supuesto. Si falta un archivo o una credencial necesaria, no inventes su contenido: explica qué necesitas y continúa con las partes que sí pueden implementarse.
+
+## 15. Criterios de aceptación
+
+La aplicación se considerará lista para una primera versión funcional cuando:
+
+- Permita autenticarse de manera segura.
+- Gestione usuarios y roles con autorización del lado del servidor.
+- Permita crear y actualizar normas jurídicas.
+- Permita registrar publicaciones oficiales.
+- Permita crear y modificar artículos almacenando únicamente su texto vigente.
+- Ofrezca búsqueda y filtros funcionales.
+- Registre las operaciones jurídicas relevantes.
+- Utilice consultas preparadas y validación del lado del servidor.
+- Implemente protección CSRF y escape de salida.
+- Incluya paginación y una interfaz responsive con Bootstrap.
+- Disponga de pruebas y documentación de instalación.
+- No incluya credenciales reales, secretos ni datos sensibles en el repositorio.
+- No presente como verificada una norma cuya fuente o vigencia no haya sido comprobada.
+
+## Instrucción final
+
+Comienza inspeccionando el proyecto y el esquema SQL existente. Después, implementa una solución funcional, segura y mantenible, siguiendo las etapas descritas.
+
+Prioriza la integridad jurídica de los datos, la seguridad, la claridad de la interfaz y la facilidad de mantenimiento. No inventes información legal ni atribuyas vigencia a una norma sin evidencia suficiente.
+
+Al terminar cada etapa, informa:
+
+- Archivos creados o modificados.
+- Funcionalidades implementadas.
+- Pruebas ejecutadas y resultados.
+- Problemas pendientes.
+- Próximos pasos.
+
+No declares el proyecto terminado hasta verificar los criterios de aceptación que realmente se hayan podido probar.
+
+
+
+Estado actual:
+- MySQL de desarrollo sigue corriendo en 127.0.0.1:3307 (instancia propia, aislada de cualquier otra que tengas), con el esquema cargado y datos de prueba (incluye una norma de ejemplo, un artículo, y los usuarios que creamos).
+- .env ya está configurado con esas credenciales (DB_PASSWORD=b6a5cae402bda1fcb4bcc65b9418cd6d).
+
+Para levantar el sitio tú mismo:
+cd "C:\Users\E01\claude_code_curso\sistema_juridico_ec"
+php -S 127.0.0.1:8099 -t public
+Luego abre http://127.0.0.1:8099/login.
+
+Credenciales de prueba:
+- Admin: admin@sistemajuridico.test / AdminSeguro_2024_xyz
+- Consulta: consulta@sistemajuridico.test / ConsultaSegura123
+
+Si necesitas parar/reiniciar la base de datos:
+# Detener
+"/c/Program Files/MySQL/MySQL Server 8.4/bin/mysqladmin.exe" --host=127.0.0.1 --port=3307 --user=root shutdown
+
+# Volver a iniciar
+"/c/Program Files/MySQL/MySQL Server 8.4/bin/mysqld.exe" --datadir="C:\Users\E01\mysql-sistema-juridico-ec\data" --port=3307 --bind-address=127.0.0.1 --mysqlx=OFF
+
+claude --resume 894dbdbf-7307-4e86-827a-5db025ee493f
+
