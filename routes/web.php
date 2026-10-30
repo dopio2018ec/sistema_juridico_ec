@@ -11,6 +11,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NormaController;
 use App\Http\Controllers\PublicacionController;
 use App\Http\Controllers\RelacionController;
+use App\Http\Controllers\RespaldoController;
 use App\Http\Controllers\TipoNormaController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Middleware\AuthMiddleware;
@@ -31,6 +32,9 @@ return function (Router $router): void {
 
     // Panel principal
     $router->get('/', [DashboardController::class, 'index'], $autenticado);
+
+    // Respaldo de la base de datos (solo administrador)
+    $router->post('/respaldos', [RespaldoController::class, 'generar'], array_merge($soloAdmin, [CsrfMiddleware::class]));
 
     // Usuarios (solo administrador)
     $router->get('/usuarios', [UsuarioController::class, 'index'], $soloAdmin);

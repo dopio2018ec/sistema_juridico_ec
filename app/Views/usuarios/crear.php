@@ -1,8 +1,8 @@
 <?php use App\Core\View; ?>
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Panel</a></li>
-        <li class="breadcrumb-item"><a href="/usuarios">Usuarios</a></li>
+        <li class="breadcrumb-item"><a href=".">Panel</a></li>
+        <li class="breadcrumb-item"><a href="usuarios">Usuarios</a></li>
         <li class="breadcrumb-item active" aria-current="page">Nuevo usuario</li>
     </ol>
 </nav>
@@ -19,7 +19,7 @@
     </div>
 <?php endif; ?>
 
-<form method="post" action="/usuarios" class="row g-3" novalidate>
+<form method="post" action="usuarios" class="row g-3" novalidate>
     <?= $csrf_field ?>
     <div class="col-md-6">
         <label for="nombre" class="form-label">Nombre completo</label>
@@ -49,6 +49,6 @@
     </div>
     <div class="col-12">
         <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Crear usuario</button>
-        <a href="/usuarios" class="btn btn-outline-secondary">Cancelar</a>
+        <a href="usuarios" class="btn btn-outline-secondary">Cancelar</a>
     </div>
 </form>

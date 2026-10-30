@@ -5,9 +5,12 @@ declare(strict_types=1);
 use App\Core\Request;
 use App\Core\Router;
 use App\Core\Session;
+use App\Core\Url;
 use App\Http\Middleware\SecurityHeadersMiddleware;
 
 require dirname(__DIR__) . '/app/bootstrap.php';
+
+Url::setBasePath(rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/index.php')), '/'));
 
 Session::start();
 

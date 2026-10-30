@@ -8,7 +8,7 @@
     Al guardar, el texto vigente anterior sera sustituido y no estara disponible en el sistema. Este esquema
     no conserva historial de versiones.
 </div>
-<form method="post" action="/articulos/<?= (int) $articulo['id'] ?>" class="row g-3"
+<form method="post" action="articulos/<?= (int) $articulo['id'] ?>" class="row g-3"
       data-confirm="¿Confirma reemplazar el texto vigente de este articulo? El texto anterior no quedara disponible.">
     <?= $csrf_field ?>
     <div class="col-md-3">
@@ -37,6 +37,6 @@
     </div>
     <div class="col-12">
         <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Guardar texto vigente</button>
-        <a href="/normas/<?= (int) $articulo['norma_id'] ?>" class="btn btn-outline-secondary">Cancelar</a>
+        <a href="normas/<?= (int) $articulo['norma_id'] ?>" class="btn btn-outline-secondary">Cancelar</a>
     </div>
 </form>

@@ -1,16 +1,16 @@
 <?php use App\Core\View; $totalPaginas = (int) ceil(max(1, $total) / $porPagina); ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="h4 mb-0"><i class="bi bi-journal-text"></i> Normas</h1>
-    <a href="/normas/crear" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nueva norma</a>
+    <a href="normas/crear" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nueva norma</a>
 </div>
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Panel</a></li>
+        <li class="breadcrumb-item"><a href=".">Panel</a></li>
         <li class="breadcrumb-item active" aria-current="page">Normas</li>
     </ol>
 </nav>
 
-<form method="get" action="/normas" class="row g-2 mb-3">
+<form method="get" action="normas" class="row g-2 mb-3">
     <div class="col-md-4">
         <input type="text" name="q" class="form-control" placeholder="Titulo, numero o siglas" value="<?= View::e($filtros['texto']) ?>">
     </div>
@@ -41,7 +41,7 @@
         <tbody>
         <?php foreach ($normas as $norma): ?>
             <tr>
-                <td><a href="/normas/<?= (int) $norma['id'] ?>"><?= View::e($norma['titulo']) ?></a></td>
+                <td><a href="normas/<?= (int) $norma['id'] ?>"><?= View::e($norma['titulo']) ?></a></td>
                 <td><?= View::e($norma['tipo_norma_nombre']) ?></td>
                 <td><?= View::e($norma['numero_norma'] ?? '-') ?></td>
                 <td><?= View::e($norma['fecha_publicacion'] ?? '-') ?></td>
@@ -60,7 +60,7 @@
     <ul class="pagination">
         <?php for ($p = 1; $p <= $totalPaginas; $p++): ?>
             <li class="page-item <?= $p === $pagina ? 'active' : '' ?>">
-                <a class="page-link" href="/normas?pagina=<?= $p ?>&q=<?= urlencode($filtros['texto']) ?>">
+                <a class="page-link" href="normas?pagina=<?= $p ?>&q=<?= urlencode($filtros['texto']) ?>">
                     <?= $p ?>
                 </a>
             </li>

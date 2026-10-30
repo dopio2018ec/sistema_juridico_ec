@@ -1,17 +1,17 @@
 <?php use App\Core\View; $totalPaginas = (int) ceil(max(1, $total) / $porPagina); ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="h4 mb-0"><i class="bi bi-people"></i> Usuarios</h1>
-    <a href="/usuarios/crear" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nuevo usuario</a>
+    <a href="usuarios/crear" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nuevo usuario</a>
 </div>
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Panel</a></li>
+        <li class="breadcrumb-item"><a href=".">Panel</a></li>
         <li class="breadcrumb-item active" aria-current="page">Usuarios</li>
     </ol>
 </nav>
 
-<form method="get" action="/usuarios" class="row g-2 mb-3">
+<form method="get" action="usuarios" class="row g-2 mb-3">
     <div class="col-md-5">
         <label class="visually-hidden" for="q">Buscar</label>
         <input type="text" id="q" name="q" class="form-control" placeholder="Buscar por nombre o correo" value="<?= View::e($busqueda) ?>">
@@ -57,10 +57,10 @@
                 </td>
                 <td><?= View::e($usuario['ultimo_acceso'] ?? 'Nunca') ?></td>
                 <td class="text-end">
-                    <a href="/usuarios/<?= (int) $usuario['id'] ?>/editar" class="btn btn-sm btn-outline-primary">
+                    <a href="usuarios/<?= (int) $usuario['id'] ?>/editar" class="btn btn-sm btn-outline-primary">
                         <i class="bi bi-pencil"></i> Editar
                     </a>
-                    <form method="post" action="/usuarios/<?= (int) $usuario['id'] ?>/estado" class="d-inline"
+                    <form method="post" action="usuarios/<?= (int) $usuario['id'] ?>/estado" class="d-inline"
                           data-confirm="<?= (int) $usuario['estado'] === 1 ? '¿Desactivar este usuario?' : '¿Activar este usuario?' ?>">
                         <?= $csrf_field ?>
                         <input type="hidden" name="activo" value="<?= (int) $usuario['estado'] === 1 ? '0' : '1' ?>">
@@ -80,7 +80,7 @@
     <ul class="pagination">
         <?php for ($p = 1; $p <= $totalPaginas; $p++): ?>
             <li class="page-item <?= $p === $pagina ? 'active' : '' ?>">
-                <a class="page-link" href="/usuarios?pagina=<?= $p ?>&q=<?= urlencode($busqueda) ?>&estado=<?= urlencode($estado) ?>"><?= $p ?></a>
+                <a class="page-link" href="usuarios?pagina=<?= $p ?>&q=<?= urlencode($busqueda) ?>&estado=<?= urlencode($estado) ?>"><?= $p ?></a>
             </li>
         <?php endfor; ?>
     </ul>

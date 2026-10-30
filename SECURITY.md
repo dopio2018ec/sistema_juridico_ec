@@ -60,6 +60,25 @@
 `Content-Security-Policy` que solo permite scripts/estilos propios y de
 `cdn.jsdelivr.net` (Bootstrap/Bootstrap Icons).
 
+### Respaldo de base de datos
+- Generado unicamente via PDO (`App\Services\BackupService`), sin invocar
+  `mysqldump` ni ningun binario externo: evita exponer `DB_PASSWORD` en la
+  lista de procesos del sistema.
+- Ruta `POST /respaldos` restringida a `ADMINISTRADOR`
+  (`RoleMiddleware::for(['ADMINISTRADOR'])`) y protegida por
+  `CsrfMiddleware`.
+- Los nombres de tabla interpolados en el SQL generado provienen de
+  `SHOW TABLES` (catalogo propio del motor), nunca de entrada del usuario.
+- El volcado se entrega como descarga directa (`Content-Disposition:
+  attachment`) y no se persiste en `storage/` ni en ninguna ruta accesible
+  por el servidor web.
+- Cada respaldo generado queda registrado en `auditoria` (accion
+  `RESPALDO`), igual que el resto de acciones sensibles.
+- **El archivo descargado contiene `usuarios.password_hash` y el resto de
+  datos sin enmascarar** (como cualquier respaldo completo de base de
+  datos). Quien lo descargue debe almacenarlo cifrado o en un medio
+  controlado, y nunca compartirlo por canales inseguros.
+
 ### IDOR
 - Todo acceso a un recurso por `id` verifica su existencia en el repositorio
   antes de operar, y la autorizacion por rol se aplica antes de llegar al

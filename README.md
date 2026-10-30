@@ -173,6 +173,14 @@ servidor web pero no accesibles publicamente (estan fuera de `public/`).
 
 ## 9. Copias de seguridad
 
+Un usuario con rol `ADMINISTRADOR` puede generar y descargar un respaldo
+completo (estructura + datos) con un clic desde el Panel principal
+("Respaldar base de datos"), sin necesidad de acceso al servidor. Queda
+registrado en `auditoria` (accion `RESPALDO`); vease
+[SECURITY.md](SECURITY.md) para el detalle de como se genera.
+
+Alternativamente, desde la linea de comandos:
+
 ```bash
 mysqldump -u sistema_juridico_app -p sistema_juridico_ec > backup_$(date +%Y%m%d).sql
 ```

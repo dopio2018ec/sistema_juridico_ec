@@ -3,7 +3,7 @@
 <?php if (!empty($errores)): ?>
     <div class="alert alert-danger"><ul class="mb-0"><?php foreach ($errores as $m): foreach ($m as $msg): ?><li><?= View::e($msg) ?></li><?php endforeach; endforeach; ?></ul></div>
 <?php endif; ?>
-<form method="post" action="/normas" class="row g-3" data-confirm="¿Registrar esta norma?">
+<form method="post" action="normas" class="row g-3" data-confirm="¿Registrar esta norma?">
     <?= $csrf_field ?>
     <div class="col-md-4">
         <label for="tipo_norma_id" class="form-label">Tipo de norma</label>
@@ -83,6 +83,6 @@
 
     <div class="col-12">
         <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Registrar norma</button>
-        <a href="/normas" class="btn btn-outline-secondary">Cancelar</a>
+        <a href="normas" class="btn btn-outline-secondary">Cancelar</a>
     </div>
 </form>

@@ -1,8 +1,8 @@
 <?php use App\Core\View; ?>
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Panel</a></li>
-        <li class="breadcrumb-item"><a href="/usuarios">Usuarios</a></li>
+        <li class="breadcrumb-item"><a href=".">Panel</a></li>
+        <li class="breadcrumb-item"><a href="usuarios">Usuarios</a></li>
         <li class="breadcrumb-item active" aria-current="page">Editar usuario</li>
     </ol>
 </nav>
@@ -19,7 +19,7 @@
     </div>
 <?php endif; ?>
 
-<form method="post" action="/usuarios/<?= (int) $usuario['id'] ?>" class="row g-3" novalidate>
+<form method="post" action="usuarios/<?= (int) $usuario['id'] ?>" class="row g-3" novalidate>
     <?= $csrf_field ?>
     <div class="col-md-6">
         <label for="nombre" class="form-label">Nombre completo</label>
@@ -45,14 +45,14 @@
     </div>
     <div class="col-12">
         <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Guardar cambios</button>
-        <a href="/usuarios" class="btn btn-outline-secondary">Cancelar</a>
+        <a href="usuarios" class="btn btn-outline-secondary">Cancelar</a>
     </div>
 </form>
 
 <hr>
 
 <h2 class="h5">Restablecer contrasena</h2>
-<form method="post" action="/usuarios/<?= (int) $usuario['id'] ?>/password" class="row g-3"
+<form method="post" action="usuarios/<?= (int) $usuario['id'] ?>/password" class="row g-3"
       data-confirm="¿Restablecer la contrasena de este usuario?">
     <?= $csrf_field ?>
     <div class="col-md-6">

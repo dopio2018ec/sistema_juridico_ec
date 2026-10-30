@@ -10,7 +10,7 @@
                 <?php if (!empty($flash_exito)): ?>
                     <div class="alert alert-success" role="alert"><?= View::e($flash_exito) ?></div>
                 <?php endif; ?>
-                <form method="post" action="/login" novalidate>
+                <form method="post" action="login" novalidate>
                     <?= $csrf_field ?>
                     <div class="mb-3">
                         <label for="correo" class="form-label">Correo electronico</label>

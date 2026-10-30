@@ -1,7 +1,7 @@
 <?php use App\Core\View; $totalPaginas = (int) ceil(max(1, $total) / $porPagina); ?>
 <h1 class="h4 mb-3"><i class="bi bi-search"></i> Busqueda juridica</h1>
 
-<form method="get" action="/busqueda" class="row g-2 mb-4">
+<form method="get" action="busqueda" class="row g-2 mb-4">
     <div class="col-md-4">
         <label class="form-label">Texto o palabras clave</label>
         <input type="text" name="texto" class="form-control" value="<?= View::e($filtros['texto']) ?>">
@@ -44,7 +44,7 @@
     <p class="text-muted"><?= (int) $total ?> resultado(s) encontrado(s).</p>
     <div class="list-group mb-3">
         <?php foreach ($resultados as $fila): ?>
-            <a href="/normas/<?= (int) $fila['norma_id'] ?>" class="list-group-item list-group-item-action">
+            <a href="normas/<?= (int) $fila['norma_id'] ?>" class="list-group-item list-group-item-action">
                 <div class="d-flex justify-content-between">
                     <strong><?= View::e($fila['norma_titulo']) ?></strong>
                     <span class="badge bg-secondary">Art. <?= View::e($fila['articulo_numero']) ?></span>
@@ -62,7 +62,7 @@
         <ul class="pagination">
             <?php for ($p = 1; $p <= $totalPaginas; $p++): ?>
                 <li class="page-item <?= $p === $pagina ? 'active' : '' ?>">
-                    <a class="page-link" href="/busqueda?pagina=<?= $p ?>&texto=<?= urlencode($filtros['texto']) ?>"><?= $p ?></a>
+                    <a class="page-link" href="busqueda?pagina=<?= $p ?>&texto=<?= urlencode($filtros['texto']) ?>"><?= $p ?></a>
                 </li>
             <?php endfor; ?>
         </ul>

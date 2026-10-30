@@ -36,7 +36,7 @@
     <ul class="pagination">
         <?php for ($p = 1; $p <= $totalPaginas; $p++): ?>
             <li class="page-item <?= $p === $pagina ? 'active' : '' ?>">
-                <a class="page-link" href="/auditoria?pagina=<?= $p ?>"><?= $p ?></a>
+                <a class="page-link" href="auditoria?pagina=<?= $p ?>"><?= $p ?></a>
             </li>
         <?php endfor; ?>
     </ul>

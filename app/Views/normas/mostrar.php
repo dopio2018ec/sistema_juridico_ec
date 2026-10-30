@@ -1,8 +1,8 @@
 <?php use App\Core\View; use App\Core\Auth; ?>
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Panel</a></li>
-        <li class="breadcrumb-item"><a href="/normas">Normas</a></li>
+        <li class="breadcrumb-item"><a href=".">Panel</a></li>
+        <li class="breadcrumb-item"><a href="normas">Normas</a></li>
         <li class="breadcrumb-item active" aria-current="page"><?= View::e($norma['titulo']) ?></li>
     </ol>
 </nav>
@@ -15,9 +15,9 @@
     <div class="text-end">
         <span class="badge <?= $vigencia['clase_css'] ?>"><?= View::e($vigencia['etiqueta']) ?></span>
         <div class="mt-2">
-            <a href="/normas/<?= (int) $norma['id'] ?>/editar" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i> Editar</a>
+            <a href="normas/<?= (int) $norma['id'] ?>/editar" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i> Editar</a>
             <?php if (Auth::hasAnyRole(['ADMINISTRADOR', 'REVISOR']) && !$vigencia['verificada']): ?>
-            <form method="post" action="/normas/<?= (int) $norma['id'] ?>/revisar" class="d-inline"
+            <form method="post" action="normas/<?= (int) $norma['id'] ?>/revisar" class="d-inline"
                   data-confirm="¿Confirma que verificó la vigencia de esta norma con fuentes oficiales?">
                 <?= $csrf_field ?>
                 <button type="submit" class="btn btn-sm btn-outline-success"><i class="bi bi-patch-check"></i> Marcar revisada</button>
@@ -73,8 +73,8 @@
                             <?php endif; ?>
                         </td>
                         <td class="text-end">
-                            <a href="/articulos/<?= (int) $articulo['id'] ?>/editar" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
-                            <form method="post" action="/articulos/<?= (int) $articulo['id'] ?>/estado" class="d-inline"
+                            <a href="articulos/<?= (int) $articulo['id'] ?>/editar" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                            <form method="post" action="articulos/<?= (int) $articulo['id'] ?>/estado" class="d-inline"
                                   data-confirm="¿Cambiar el estado de este articulo?">
                                 <?= $csrf_field ?>
                                 <input type="hidden" name="activo" value="<?= (int) $articulo['estado'] === 1 ? '0' : '1' ?>">
@@ -94,7 +94,7 @@
 
         <details>
             <summary class="mb-2">Agregar articulo o disposicion</summary>
-            <form method="post" action="/normas/<?= (int) $norma['id'] ?>/articulos" class="row g-2">
+            <form method="post" action="normas/<?= (int) $norma['id'] ?>/articulos" class="row g-2">
                 <?= $csrf_field ?>
                 <div class="col-md-2">
                     <label class="form-label">Numero</label>
@@ -157,7 +157,7 @@
 
         <details>
             <summary class="mb-2">Agregar publicacion oficial</summary>
-            <form method="post" action="/normas/<?= (int) $norma['id'] ?>/publicaciones" class="row g-2">
+            <form method="post" action="normas/<?= (int) $norma['id'] ?>/publicaciones" class="row g-2">
                 <?= $csrf_field ?>
                 <div class="col-md-4">
                     <label class="form-label">Nombre de la publicacion</label>
@@ -200,7 +200,7 @@
             <?php foreach ($relacionesOrigen as $relacion): ?>
                 <li class="list-group-item">
                     <span class="badge bg-secondary"><?= View::e($relacion['tipo_relacion']) ?></span>
-                    <a href="/normas/<?= (int) $relacion['norma_destino_id'] ?>"><?= View::e($relacion['norma_destino_titulo']) ?></a>
+                    <a href="normas/<?= (int) $relacion['norma_destino_id'] ?>"><?= View::e($relacion['norma_destino_titulo']) ?></a>
                     <?php if ($relacion['fecha_efecto']): ?> (vigor: <?= View::e($relacion['fecha_efecto']) ?>)<?php endif; ?>
                 </li>
             <?php endforeach; ?>
@@ -212,7 +212,7 @@
             <?php foreach ($relacionesDestino as $relacion): ?>
                 <li class="list-group-item">
                     <span class="badge bg-secondary"><?= View::e($relacion['tipo_relacion']) ?></span>
-                    <a href="/normas/<?= (int) $relacion['norma_origen_id'] ?>"><?= View::e($relacion['norma_origen_titulo']) ?></a>
+                    <a href="normas/<?= (int) $relacion['norma_origen_id'] ?>"><?= View::e($relacion['norma_origen_titulo']) ?></a>
                     <?php if ($relacion['fecha_efecto']): ?> (vigor: <?= View::e($relacion['fecha_efecto']) ?>)<?php endif; ?>
                 </li>
             <?php endforeach; ?>
@@ -221,7 +221,7 @@
 
         <details>
             <summary class="mb-2">Registrar relacion normativa</summary>
-            <form method="post" action="/normas/<?= (int) $norma['id'] ?>/relaciones" class="row g-2">
+            <form method="post" action="normas/<?= (int) $norma['id'] ?>/relaciones" class="row g-2">
                 <?= $csrf_field ?>
                 <div class="col-md-5">
                     <label class="form-label">Norma afectada</label>

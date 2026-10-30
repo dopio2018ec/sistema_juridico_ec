@@ -33,7 +33,18 @@ final class Response
 
     public static function redirect(string $location, int $status = 303): self
     {
-        return new self('', $status, ['Location' => $location]);
+        return new self('', $status, ['Location' => Url::to($location)]);
+    }
+
+    public static function archivoDescargable(string $contenido, string $nombreArchivo, string $contentType = 'application/octet-stream'): self
+    {
+        $nombreSeguro = str_replace(['"', "\r", "\n"], '', $nombreArchivo);
+
+        return new self($contenido, 200, [
+            'Content-Type' => $contentType,
+            'Content-Disposition' => 'attachment; filename="' . $nombreSeguro . '"',
+            'Content-Length' => (string) strlen($contenido),
+        ]);
     }
 
     public function withHeader(string $name, string $value): self
